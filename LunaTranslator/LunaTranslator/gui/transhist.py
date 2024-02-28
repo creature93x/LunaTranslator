@@ -91,10 +91,13 @@ class transhist(closeashidewindow):
         sentence= '<hr>' if globalconfig['hist_split'] else '\n'+sentence
         if self.hiderawflag:
             sentence=''
-        self.textOutput.append(sentence) 
+        #self.textOutput.append(sentence) 
+        self.textOutput.append(f"<p dir='rtl'>{sentence}</p>")
+     
     def getnewtrans(self,api,sentence):
         if self.hideapiflag:
             res=sentence
         else:
             res=api+'  '+sentence
-        self.textOutput.append(res) 
+        #self.textOutput.append(res)
+        self.textOutput.append(f"<p dir='rtl'>{res}</p>")

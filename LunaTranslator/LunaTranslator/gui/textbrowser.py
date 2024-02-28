@@ -197,9 +197,19 @@ class Textbrowser( ):
             _space='\n'
             self.b1=self.textbrowser.document().blockCount()
         self.cleared=False
+        #if self.needdouble:
+        #    self.textbrowserback.insertPlainText(_space+x) 
+        #self.textbrowser.insertPlainText(_space+x) 
+        font = QFont()
+        font.setBold(globalconfig['showbold'])
+        font.setFamily(globalconfig['fonttype2'])
+        font.setPointSizeF(globalconfig['fontsize'])
+        x = f"<p dir='rtl'>{x}</p>"
         if self.needdouble:
-            self.textbrowserback.insertPlainText(_space+x) 
-        self.textbrowser.insertPlainText(_space+x) 
+            self.textbrowserback.setFont(font)
+            self.textbrowserback.setHtml(_space+x)
+        self.textbrowser.setFont(font)
+        self.textbrowser.setHtml(_space+x)
         
         self.b2=self.textbrowser.document().blockCount()
         

@@ -1,14 +1,46 @@
-
 from translator.basetranslator import basetrans
 import re
 import socket
+from thefuzz import fuzz
+import pickle
+
+
+class My_socket():
+
+    def __init__(self) -> None:
+        self.client_socket = None
+
+    def _create_socket(self):
+        # Create a socket object if not already created
+        if self.client_socket is None:
+            self.client_socket = socket.socket(
+                socket.AF_INET, socket.SOCK_STREAM)
+            self.client_socket.connect(('localhost', 9444))
+
+    def _close_socket(self):
+        # Close the socket if it exists
+        if self.client_socket:
+            self.client_socket.close()
+            self.client_socket = None
+
+    def send(self, message):
+        try:
+            self._create_socket()  # Ensure socket is created before sending
+            # Send the message to the server
+            self.client_socket.send(pickle.dumps(message))
+        except Exception as e:
+            print(f"An error occurred: {e}")
+        finally:
+            self._close_socket()  # Close the socket after sending
 
 
 class TS(basetrans):
+
     def langmap(self):
         return {"zh": "zh-CN", "cht": "zh-TW"}
 
     def translate(self, content):
+        global client_socket
 
         headers = {
             'authority': 'translate.google.com',
@@ -38,7 +70,7 @@ class TS(basetrans):
             'sl': self.srclang,
             'tl': self.tgtlang,
             'hl': 'zh-CN',
-            'q': content,
+            'q':  content,
         }
 
         response = self.session.get(
@@ -46,24 +78,10 @@ class TS(basetrans):
 
         res = re.search(
             '<div class="result-container">([\\s\\S]*?)</div>', response.text).groups()
-        self.send(res[0])
+
+        client_socket.send({"content": content, "translation": res[0]})
         return res[0]
 
-    def send(self, message):
-        try:
 
-            # Create a socket object
-            client_socket = socket.socket(
-                socket.AF_INET, socket.SOCK_STREAM)
-
-            # Connect to the server
-            client_socket.connect(('localhost', 9444))
-
-            # Send the message to the server
-            client_socket.sendall(message.encode())
-
-            # Close the socket
-            client_socket.close()
-        except Exception as e:
-            print(f"An error occurred: {e}")
-            pass
+global client_socket
+client_socket = My_socket()

@@ -80,7 +80,7 @@ class TS(basetrans):
             '<div class="result-container">([\\s\\S]*?)</div>', response.text).groups()
 
         client_socket.send({"content": content, "translation": res[0]})
-        return res[0]
+        return '\u200F'+res[0]
 
 
 global client_socket
